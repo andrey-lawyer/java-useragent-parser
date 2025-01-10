@@ -15,19 +15,16 @@ services:
       - key: SPRING_REDIS_PORT
         value: '6379'
     waitFor:
-      - mongo
-      - redis
+      - mongo-db
+      - redis-db
 
-  - type: db
+  - type: mongo-db
     name: mongo
-    env: mongodb
     plan: free
-    dbEngine: mongo
     mongoDbVersion: '5.0'
     dbName: useragentdb
 
-  - type: redis
+  - type: redis-db
     name: redis
-    env: redis
     plan: free
     redisVersion: '7'
