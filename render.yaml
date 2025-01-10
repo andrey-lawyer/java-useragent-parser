@@ -18,13 +18,26 @@ services:
       - mongo
       - redis
 
-  - type: mongo
+  - type: pserv
     name: mongo
-    plan: free
-    mongoDbVersion: '5.0'
-    dbName: useragentdb
+    env: docker
+    autoDeploy: false
+    disk:
+      name: data
+      mountPath: /data/db
+      sizeGB: 10
+    docker:
+      image: mongo:8.0
+      restartPolicy: always
+    envVars:
+      - key: MONGO_INITDB_ROOT_USERNAME
+        value: admin
+      - key: MONGO_INITDB_ROOT_PASSWORD
+        value: password
+    ports:
+      - "27017:27017"
 
-  - type: redis
+  - type: redis-db
     name: redis
     plan: free
     redisVersion: '7'
