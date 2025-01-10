@@ -39,5 +39,14 @@ services:
 
   - type: redis-db
     name: redis
-    plan: free
-    redisVersion: '7'
+    env: docker
+    autoDeploy: false
+    disk:
+     name: data
+     mountPath: /var/lib/redis
+    sizeGB: 10
+    docker:
+      image: redis:7.4-alpine
+      restartPolicy: always
+    ports:
+        - "6379:6379"
