@@ -1,0 +1,33 @@
+services:
+  - type: web
+    name: useragent-parser
+    env: docker
+    plan: free
+    docker:
+      image: andreylawyer/useragent-parser:v1.0
+      buildCommand: 'echo "Docker image already built"'
+      startCommand: 'java -Dspring.data.mongodb.uri=mongodb://mongo:27017/useragentdb -jar app.jar'
+    envVars:
+      - key: SPRING_DATA_MONGODB_URI
+        value: mongodb://mongo:27017/useragentdb
+      - key: SPRING_REDIS_HOST
+        value: redis
+      - key: SPRING_REDIS_PORT
+        value: '6379'
+    waitFor:
+      - mongo
+      - redis
+
+  - type: db
+    name: mongo
+    env: mongodb
+    plan: free
+    dbEngine: mongo
+    mongoDbVersion: '5.0'
+    dbName: useragentdb
+
+  - type: redis
+    name: redis
+    env: redis
+    plan: free
+    redisVersion: '7'
