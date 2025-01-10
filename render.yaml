@@ -37,7 +37,7 @@ services:
     ports:
       - "27017:27017"
 
-  - type: redis-db
+  - type: pserv
     name: redis
     env: docker
     autoDeploy: false
