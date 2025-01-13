@@ -3,30 +3,34 @@ services:
     type: web
     env: docker
     dockerfilePath: Dockerfile
-    buildCommand: "" # No build command since the image is ready
+    buildCommand: "" # Приложение уже собрано
     startCommand: "java -jar app.jar"
     envVars:
       - key: SPRING_DATA_MONGODB_URI
-        value: mongodb+srv://<MONGO_USER>:<MONGO_PASSWORD>@<MONGO_CLUSTER>/<DB_NAME>
+        value: mongodb://mongo:27017/useragentdb
       - key: SPRING_REDIS_HOST
         value: redis
       - key: SPRING_REDIS_PORT
         value: "6379"
     dependsOn:
       - redis
-      - mongodb
+      - mongo
     plan: free
-    healthCheckPath: "/" # Define if your app has a specific health check endpoint
-    region: oregon # Replace with a preferred Render region
+    healthCheckPath: "/" # Укажите путь для проверки состояния вашего приложения
+    region: frankfurt # Укажите предпочтительный регион Render
 
   - name: redis
     type: redis
     plan: free
 
-  - name: mongodb
-    type: database
-    databaseType: mongodb
+  - name: mongo
+    type: web
+    env: docker
+    dockerfilePath: ""
+    startCommand: "mongod --bind_ip_all"
+    image: mongo:8.0
     plan: free
-    ipAllowList: # Ensure the spring-app service can connect
-      - source: spring-app
+    envVars:
+      - key: MONGO_INITDB_DATABASE
+        value: useragentdb
 
