@@ -12,12 +12,7 @@ services:
         value: redis
       - key: SPRING_REDIS_PORT
         value: "6379"
-    dependsOn:
-      - redis
-      - mongo
     plan: free
-    healthCheckPath: "/" # Укажите путь для проверки состояния вашего приложения
-    region: frankfurt # Укажите предпочтительный регион Render
 
   - name: redis
     type: redis
@@ -33,4 +28,5 @@ services:
     envVars:
       - key: MONGO_INITDB_DATABASE
         value: useragentdb
+
 
