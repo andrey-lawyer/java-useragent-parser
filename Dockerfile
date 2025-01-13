@@ -7,5 +7,6 @@ WORKDIR /tmp
 COPY build/libs/*.jar app.jar
 
 
-ENTRYPOINT ["java", "-jar", "app.jar"]
+#ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["java", "-Dspring.data.mongodb.uri=mongodb://mongodb:27017/chat-db", "-jar", "app.jar"]
 
