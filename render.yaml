@@ -1,52 +1,32 @@
 services:
-  - type: web
-    name: useragent-parser
+  - name: spring-app
+    type: web
     env: docker
-    plan: free
-    docker:
-      image: andreylawyer/useragent-parser:v1.0
-      buildCommand: 'echo "Docker image already built"'
-      startCommand: 'java -Dspring.data.mongodb.uri=mongodb://mongo:27017/useragentdb -jar app.jar'
+    dockerfilePath: Dockerfile
+    buildCommand: "" # No build command since the image is ready
+    startCommand: "java -jar app.jar"
     envVars:
       - key: SPRING_DATA_MONGODB_URI
-        value: mongodb://mongo:27017/useragentdb
+        value: mongodb+srv://<MONGO_USER>:<MONGO_PASSWORD>@<MONGO_CLUSTER>/<DB_NAME>
       - key: SPRING_REDIS_HOST
         value: redis
       - key: SPRING_REDIS_PORT
-        value: '6379'
-    waitFor:
-      - mongo
+        value: "6379"
+    dependsOn:
       - redis
+      - mongodb
+    plan: free
+    healthCheckPath: "/" # Define if your app has a specific health check endpoint
+    region: oregon # Replace with a preferred Render region
 
-  - type: pserv
-    name: mongo
-    env: docker
-    autoDeploy: false
-    disk:
-      name: data
-      mountPath: /data/db
-      sizeGB: 10
-    docker:
-      image: mongo:8.0
-      restartPolicy: always
-    envVars:
-      - key: MONGO_INITDB_ROOT_USERNAME
-        value: admin
-      - key: MONGO_INITDB_ROOT_PASSWORD
-        value: password
-    ports:
-      - "27017:27017"
+  - name: redis
+    type: redis
+    plan: free
 
-  - type: pserv
-    name: redis
-    env: docker
-    autoDeploy: false
-    disk:
-     name: data
-     mountPath: /var/lib/redis
-    sizeGB: 10
-    docker:
-      image: redis:7.4-alpine
-      restartPolicy: always
-    ports:
-        - "6379:6379"
+  - name: mongodb
+    type: database
+    databaseType: mongodb
+    plan: free
+    ipAllowList: # Ensure the spring-app service can connect
+      - source: spring-app
+
