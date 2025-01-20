@@ -21,7 +21,6 @@ public class UserAgentParser {
     }
 
     public Mono<UserAgentInfo> parseUserAgent(String userAgent) {
-        userAgent = userAgent.replaceAll("\\n", "").replaceAll("\\s+", " ").trim();
 
         UserAgentInfo info = new UserAgentInfo();
         info.setUserAgent(userAgent);
