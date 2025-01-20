@@ -11,24 +11,10 @@ services:
       - mongodb
       - redis
     environment:
-      - SPRING_DATA_MONGODB_URI=mongodb://mongo:27017/useragentdb
       - SPRING_REDIS_HOST=redis
       - SPRING_REDIS_PORT=6379
     networks:
       - app-network
-
-
-  mongodb:
-    image: mongo:8.0
-    restart: always
-    container_name: mongo
-    ports:
-      - "27017:27017"
-    volumes:
-      - mongo_data_1:/data/db
-    networks:
-      - app-network
-
 
   redis:
     image: redis:7.4-alpine
@@ -43,6 +29,3 @@ networks:
   app-network:
     driver: bridge
 
-volumes:
-  mongo_data_1:
-    driver: local
