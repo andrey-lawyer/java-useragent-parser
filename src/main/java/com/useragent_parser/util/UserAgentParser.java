@@ -328,7 +328,7 @@ public class UserAgentParser {
 
 
     // Function to get the main version
-    private  String getMajorVersion(String version) {
+    public String getMajorVersion(String version) {
         if (version != null && !version.isEmpty()) {
             // Remove all characters that are not numbers and dots
             String strippedVersion = version.replaceAll("[^\\d.]", "");

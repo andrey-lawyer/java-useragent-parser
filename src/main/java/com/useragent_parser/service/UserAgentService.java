@@ -8,9 +8,12 @@ import org.springframework.data.redis.core.ReactiveHashOperations;
 import org.springframework.data.redis.core.ReactiveRedisTemplate;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
+
+import org.springframework.http.HttpHeaders;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
+
 
 @Service
 public class UserAgentService {
@@ -74,4 +77,70 @@ public class UserAgentService {
                                         "UserAgent parsing error for UserAgent:: " + userAgent, e)))
                 );
     }
+
+
+    // Method for model processing using Client Hints
+    public Mono<UserAgentInfo> updateUserAgentInfoWithClientHints(UserAgentInfo userAgentInfo, HttpHeaders headers) {
+        // Check for headers and update only if they are present
+
+        // Platform
+        String uaPlatform = headers.getFirst("Sec-CH-UA-Platform");
+        if (uaPlatform != null) {
+            if (userAgentInfo.getOs() == null) {
+                userAgentInfo.setOs(new UserAgentInfo.Os());
+            }
+            userAgentInfo.getOs().setName(removeEscapedQuotes(uaPlatform));  // Updating the platform
+        }
+
+        // Platform Version
+        String uaPlatformVersion = headers.getFirst("Sec-CH-UA-Platform-Version");
+        if (uaPlatformVersion != null) {
+            if (userAgentInfo.getOs() == null) {
+                userAgentInfo.setOs(new UserAgentInfo.Os());
+            }
+            userAgentInfo.getOs().setVersion(removeEscapedQuotes(uaPlatformVersion));
+
+            String majorVersion = userAgentParser.getMajorVersion(uaPlatformVersion);
+            userAgentInfo.getOs().setName(majorVersion);
+        }
+
+        // Architecture
+        String uaArch = headers.getFirst("Sec-CH-UA-Arch");
+        if (uaArch != null) {
+            if (userAgentInfo.getCpu() == null) {
+                userAgentInfo.setCpu(new UserAgentInfo.Cpu());
+            }
+            userAgentInfo.getCpu().setArchitecture(removeEscapedQuotes(uaArch));  // Updating the architecture
+        }
+
+        // Mobile
+        String uaMobile = headers.getFirst("Sec-CH-UA-Mobile");
+        if (uaMobile != null) {
+            if (userAgentInfo.getDevice() == null) {
+                userAgentInfo.setDevice(new UserAgentInfo.Device());
+            }
+            userAgentInfo.getDevice().setType(uaMobile.equals("?1") ? "mobile" : "desktop");  // Updating the device type
+        }
+
+        // Model
+        String uaModel = headers.getFirst("Sec-CH-UA-Model");
+        if (uaModel != null) {
+            if (userAgentInfo.getDevice() == null) {
+                userAgentInfo.setDevice(new UserAgentInfo.Device());
+            }
+            userAgentInfo.getDevice().setModel(removeEscapedQuotes(uaModel));  // Update the device model
+        }
+
+
+        // Return an updated model if at least one header was found and changed
+        return Mono.just(userAgentInfo);
+    }
+
+    private String removeEscapedQuotes(String value) {
+        if (value != null) {
+            return value.replaceAll("^\"|\"$", "");
+        }
+        return value;
+    }
+
 }
