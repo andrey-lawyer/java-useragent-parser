@@ -39,15 +39,18 @@ http://localhost:8080
 #### Endpoint to parse user agent from the "User-Agent" header
 
 ```http
-  GET /api/user-agent/parse
+  GET /api/user-agent/parse-header
 ```
 
 
-####  Endpoint to parse user agent from request body 
+####  Endpoint to parse user agent from query parameter 
 
 ```http
-  POST /api/user-agent/parse
+  GET /api/user-agent/parse-query
 ```
+query parameters:
+- userAgent (required): The User-Agent string to parse.
+
 
 
 
